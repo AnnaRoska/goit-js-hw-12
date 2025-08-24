@@ -8,7 +8,7 @@ import {
   hideLoader,
   showLoadMoreButton,
   hideLoadMoreButton,
-} from './js/render-function.js';
+} from './js/render-functions.js';
 let currentPage = 1;
 let query = '';
 const inputImg = document.querySelector('[name="search-text"]');
