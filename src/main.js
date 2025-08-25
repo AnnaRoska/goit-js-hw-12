@@ -22,7 +22,7 @@ frmImg.addEventListener('submit', async e => {
   e.preventDefault();
   currentPage = 1;
   countLoad = 0;
-  countPerPage = 150;
+  countPerPage = 15;
   query = inputImg.value.trim();
   if (query.length === 0) {
     iziToast.error({
