@@ -22,7 +22,7 @@ frmImg.addEventListener('submit', async e => {
   e.preventDefault();
   currentPage = 1;
   countLoad = 0;
-  countPerPage = 15;
+  countPerPage = 150;
   query = inputImg.value.trim();
   if (query.length === 0) {
     iziToast.error({
@@ -66,19 +66,16 @@ frmImg.addEventListener('submit', async e => {
 });
 
 btnMore.addEventListener('click', async () => {
+  currentPage += 1;
   hideLoadMoreButton();
   if (countLoad + countPerPage >= totalHits) {
     countPerPage = totalHits - countLoad;
   }
   showLoader();
   try {
-    const dataImg = await getImagesByQuery(
-      query,
-      countPerPage,
-      (currentPage += 1)
-    );
+    const dataImg = await getImagesByQuery(query, countPerPage, currentPage);
+
     const images = dataImg.hits;
-    //totalHits = dataImg.totalHits;
     createGallery(images);
     if (!images || images.length === 0) {
       iziToast.warning({
@@ -89,7 +86,6 @@ btnMore.addEventListener('click', async () => {
       return;
     }
     countLoad = countLoad + countPerPage;
-
     if (countLoad < totalHits) {
       showLoadMoreButton();
     } else {
