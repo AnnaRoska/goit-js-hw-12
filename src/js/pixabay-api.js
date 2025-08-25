@@ -1,7 +1,7 @@
 import axios from 'axios';
 import iziToast from 'izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
-export async function getImagesByQuery(query, currentPage) {
+export async function getImagesByQuery(query, countPerPage, currentPage) {
   const BASE_URL = 'https://pixabay.com';
   const END_POINT = '/api/';
   const params = new URLSearchParams({
@@ -10,7 +10,7 @@ export async function getImagesByQuery(query, currentPage) {
     image_type: 'photo',
     orientation: 'horizontal',
     safesearch: true,
-    per_page: 15,
+    per_page: countPerPage,
     page: currentPage,
   });
   const url = `${BASE_URL}${END_POINT}?${params}`;

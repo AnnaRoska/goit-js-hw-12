@@ -10,14 +10,19 @@ import {
   hideLoadMoreButton,
 } from './js/render-functions.js';
 let currentPage = 1;
+let countPerPage = 15;
+let countLoad = 0;
 let query = '';
+let totalHits;
 const inputImg = document.querySelector('[name="search-text"]');
 const frmImg = document.querySelector('.form');
 const btnMore = document.querySelector('.btn-more');
 
-let totalHits;
 frmImg.addEventListener('submit', async e => {
   e.preventDefault();
+  currentPage = 1;
+  countLoad = 0;
+  countPerPage = 15;
   query = inputImg.value.trim();
   if (query.length === 0) {
     iziToast.error({
@@ -32,11 +37,10 @@ frmImg.addEventListener('submit', async e => {
   showLoader();
 
   try {
-    const dataImg = await getImagesByQuery(query, 1);
+    const dataImg = await getImagesByQuery(query, countPerPage, currentPage);
     const images = dataImg.hits;
     totalHits = dataImg.totalHits;
     createGallery(images);
-
     if (!images || images.length === 0) {
       iziToast.warning({
         position: 'center',
@@ -45,7 +49,11 @@ frmImg.addEventListener('submit', async e => {
       });
       return;
     }
-    showLoadMoreButton();
+    countLoad = countLoad + countPerPage;
+
+    if (countLoad < totalHits) {
+      showLoadMoreButton();
+    }
   } catch (err) {
     iziToast.error({
       position: 'center',
@@ -53,25 +61,24 @@ frmImg.addEventListener('submit', async e => {
     });
   } finally {
     hideLoader();
-
     frmImg.reset();
   }
 });
 
 btnMore.addEventListener('click', async () => {
   hideLoadMoreButton();
+  if (countLoad + countPerPage >= totalHits) {
+    countPerPage = totalHits - countLoad;
+  }
   showLoader();
   try {
-    const dataImg = await getImagesByQuery(query, (currentPage += 1));
+    const dataImg = await getImagesByQuery(
+      query,
+      countPerPage,
+      (currentPage += 1)
+    );
     const images = dataImg.hits;
-    totalHits = dataImg.totalHits;
-    if (currentPage * 15 > totalHits) {
-      iziToast.warning({
-        position: 'center',
-        message: "We're sorry, but you've reached the end of search results.",
-      });
-      return;
-    }
+    //totalHits = dataImg.totalHits;
     createGallery(images);
     if (!images || images.length === 0) {
       iziToast.warning({
@@ -81,9 +88,18 @@ btnMore.addEventListener('click', async () => {
       });
       return;
     }
+    countLoad = countLoad + countPerPage;
+
+    if (countLoad < totalHits) {
+      showLoadMoreButton();
+    } else {
+      iziToast.warning({
+        position: 'center',
+        message: "We're sorry, but you've reached the end of search results.",
+      });
+    }
     const img = document.querySelector('.photo-card');
     const cardHeight = img.getBoundingClientRect().height;
-    console.log('Висота картки:', cardHeight);
 
     window.scrollBy({
       top: cardHeight * 2,
@@ -96,7 +112,6 @@ btnMore.addEventListener('click', async () => {
     });
   } finally {
     hideLoader();
-    showLoadMoreButton();
     frmImg.reset();
   }
 });
