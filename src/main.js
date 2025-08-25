@@ -38,9 +38,8 @@ frmImg.addEventListener('submit', async e => {
 
   try {
     const dataImg = await getImagesByQuery(query, countPerPage, currentPage);
+
     const images = dataImg.hits;
-    totalHits = dataImg.totalHits;
-    createGallery(images);
     if (!images || images.length === 0) {
       iziToast.warning({
         position: 'center',
@@ -49,6 +48,9 @@ frmImg.addEventListener('submit', async e => {
       });
       return;
     }
+
+    totalHits = dataImg.totalHits;
+    createGallery(images);
     countLoad = countLoad + countPerPage;
 
     if (countLoad < totalHits) {
@@ -76,7 +78,6 @@ btnMore.addEventListener('click', async () => {
     const dataImg = await getImagesByQuery(query, countPerPage, currentPage);
 
     const images = dataImg.hits;
-    createGallery(images);
     if (!images || images.length === 0) {
       iziToast.warning({
         position: 'center',
@@ -85,6 +86,7 @@ btnMore.addEventListener('click', async () => {
       });
       return;
     }
+    createGallery(images);
     countLoad = countLoad + countPerPage;
     if (countLoad < totalHits) {
       showLoadMoreButton();
